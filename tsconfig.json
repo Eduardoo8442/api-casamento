@@ -1,7 +1,15 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "./@types"],
-    "esModuleInterop": true,
-    "moduleResolution": "node"
-  }
+    "target": "ES2020",                    // versão do JS que será gerada
+    "module": "commonjs",                  // para Node.js
+    "rootDir": "src",                       // pasta de origem dos .ts
+    "outDir": "dist",                       // pasta de saída compilada
+    "strict": true,                         // ativa verificações de tipo rigorosas
+    "esModuleInterop": true,                // mantém sua configuração
+    "moduleResolution": "node",             // mantém sua configuração
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": ["./node_modules/@types", "./@types"]
+  },
+  "include": ["src"],                       // inclui apenas a pasta src
+  "exclude": ["node_modules", "dist"]       // exclui node_modules e dist
 }
