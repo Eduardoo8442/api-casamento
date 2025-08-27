@@ -19,7 +19,6 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@fastify/cors": "^11.1.0",
     "@fastify/multipart": "^9.0.3",
     "@fastify/static": "^8.2.0",
     "cloudinary": "^1.41.3",

@@ -2,7 +2,7 @@ import Fastify from "fastify";
 import multipart from "@fastify/multipart";
 import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
-import cors from "@fastify/cors";
+import fastifyCors from "fastify-cors";
 import fastifyIO from "fastify-socket.io";
 
 dotenv.config();
@@ -10,7 +10,9 @@ dotenv.config();
 const app = Fastify({ logger: true });
 
 // CORS
-app.register(cors, { origin: "https://sueleneivan.netlify.app" });
+app.register(fastifyCors, {
+  origin: "https://sueleneivan.netlify.app"
+});
 
 // Socket.io
 app.register(fastifyIO);
