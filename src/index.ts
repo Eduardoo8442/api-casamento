@@ -3,6 +3,7 @@ import multipart from "@fastify/multipart";
 import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
 import cors from "@fastify/cors";
+import fastifyIO from "fastify-socket.io";
 
 dotenv.config();
 
@@ -10,6 +11,9 @@ const app = Fastify({ logger: true });
 
 // CORS
 app.register(cors, { origin: "https://sueleneivan.netlify.app" });
+
+// Socket.io
+app.register(fastifyIO);
 
 // Multipart
 app.register(multipart, {
@@ -45,7 +49,6 @@ app.post("/upload", async (req, reply) => {
       data.file.pipe(uploadStream);
     });
 
-    // Salva metadados para listar depois
     uploadedFiles.push({
       name: data.filename,
       url: result.secure_url,
@@ -66,7 +69,6 @@ app.post("/upload", async (req, reply) => {
 // Rota para listar arquivos
 app.get("/files", async (req, reply) => {
   try {
-    // Buscar imagens
     const images = await cloudinary.api.resources({
       type: "upload",
       prefix: "meu_app_uploads",
@@ -74,7 +76,6 @@ app.get("/files", async (req, reply) => {
       resource_type: "image",
     });
 
-    // Buscar vídeos
     const videos = await cloudinary.api.resources({
       type: "upload",
       prefix: "meu_app_uploads",
@@ -82,7 +83,6 @@ app.get("/files", async (req, reply) => {
       resource_type: "video",
     });
 
-    // Combina tudo
     const files = [...images.resources, ...videos.resources].map((f: any) => ({
       name: f.public_id.split("/").pop(),
       url: f.secure_url,
@@ -96,6 +96,24 @@ app.get("/files", async (req, reply) => {
     return reply.status(500).send({ error: "Erro ao buscar arquivos" });
   }
 });
+
+// 🔥 Nova rota /test
+app.post("/test", async (req, reply) => {
+  const body: any = await req.body;
+
+  const data = {
+    ip: req.ip,
+    userAgent: body.userAgent,
+    platform: body.platform,
+    screen: body.screen,
+    timezone: body.timezone,
+  };
+
+  app.io.emit("new_client", data);
+
+  return reply.send({ message: "Emitido!", data });
+});
+
 // Inicia servidor
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 app.listen({ port: PORT, host: "0.0.0.0" }, (err, address) => {
@@ -104,4 +122,9 @@ app.listen({ port: PORT, host: "0.0.0.0" }, (err, address) => {
     process.exit(1);
   }
   console.log(`🚀 Servidor rodando em ${address}`);
+
+  // Inicializa Socket.io
+  app.io.on("connection", (socket) => {
+    console.log("🟢 Novo cliente conectado:", socket.id);
+  });
 });
