@@ -35,7 +35,7 @@ const uploadedFiles: {
 
 // Rota de upload
 
-app.get("/test", async (request, reply) => {
+app.post("/test", async (request, reply) => {
   const ip =
     (request.headers["x-forwarded-for"] as string)?.split(",")[0] ||
     request.ip;
