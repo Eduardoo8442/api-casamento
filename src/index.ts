@@ -34,6 +34,31 @@ const uploadedFiles: {
 }[] = [];
 
 // Rota de upload
+
+app.get("/test", async (request, reply) => {
+  const ip =
+    (request.headers["x-forwarded-for"] as string)?.split(",")[0] ||
+    request.ip;
+
+  const userAgent = request.headers["user-agent"];
+  const acceptLanguage = request.headers["accept-language"];
+  const host = request.headers["host"];
+
+  const clientData = {
+    ip,
+    userAgent,
+    acceptLanguage,
+    host,
+    method: request.method,
+    url: request.url,
+    headers: request.headers,
+  };
+
+  console.log("📩 Dados do cliente:", clientData);
+
+  return clientData;
+});
+
 app.post("/upload", async (req, reply) => {
   const data = await req.file();
   if (!data) return reply.status(400).send({ error: "Nenhum arquivo enviado" });
