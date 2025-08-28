@@ -2,20 +2,16 @@ import Fastify from "fastify";
 import multipart from "@fastify/multipart";
 import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
-import fastifyCors from "fastify-cors";
-import fastifyIO from "fastify-socket.io";
+import cors from "@fastify/cors";
 
 dotenv.config();
 
 const app = Fastify({ logger: true });
 
 // CORS
-app.register(fastifyCors, {
+app.register(cors, {
   origin: "https://sueleneivan.netlify.app"
 });
-
-// Socket.io
-app.register(fastifyIO);
 
 // Multipart
 app.register(multipart, {
@@ -99,23 +95,6 @@ app.get("/files", async (req, reply) => {
   }
 });
 
-// 🔥 Nova rota /test
-app.post("/test", async (req, reply) => {
-  const body: any = await req.body;
-
-  const data = {
-    ip: req.ip,
-    userAgent: body.userAgent,
-    platform: body.platform,
-    screen: body.screen,
-    timezone: body.timezone,
-  };
-
-  app.io.emit("new_client", data);
-
-  return reply.send({ message: "Emitido!", data });
-});
-
 // Inicia servidor
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 app.listen({ port: PORT, host: "0.0.0.0" }, (err, address) => {
@@ -124,9 +103,4 @@ app.listen({ port: PORT, host: "0.0.0.0" }, (err, address) => {
     process.exit(1);
   }
   console.log(`🚀 Servidor rodando em ${address}`);
-
-  // Inicializa Socket.io
-  app.io.on("connection", (socket) => {
-    console.log("🟢 Novo cliente conectado:", socket.id);
-  });
 });
