@@ -10,7 +10,7 @@ const app = Fastify({ logger: true });
 
 // CORS
 app.register(cors, {
-  origin: "https://sueleneivan.netlify.app"
+  origin: "*"
 });
 
 // Multipart
